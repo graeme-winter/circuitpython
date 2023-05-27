@@ -544,7 +544,7 @@ STATIC mp_obj_t uctypes_struct_subscr(mp_obj_t base_in, mp_obj_t index_in, mp_ob
             }
 
         } else if (agg_type == PTR) {
-            byte *p = *(void **)(void *) self->addr;
+            byte *p = *(void **)(void *)self->addr;
             if (mp_obj_is_small_int(t->items[1])) {
                 uint val_type = GET_TYPE(MP_OBJ_SMALL_INT_VALUE(t->items[1]), VAL_TYPE_BITS);
                 return get_aligned(val_type, p, index);
