@@ -7,3 +7,5 @@
 
 #define CIRCUITPY_CONSOLE_UART_TX   (&pin_GPIO14)
 #define CIRCUITPY_CONSOLE_UART_RX   (&pin_GPIO15)
+
+#define MICROPY_PY_UCTYPES (1)
