@@ -32,7 +32,7 @@
 extern const mp_obj_type_t synthio_synthesizer_type;
 
 void common_hal_synthio_synthesizer_construct(synthio_synthesizer_obj_t *self,
-    uint32_t sample_rate, int channel_count, mp_obj_t waveform_obj, mp_obj_t filter_obj,
+    uint32_t sample_rate, int channel_count, mp_obj_t waveform_obj,
     mp_obj_t envelope_obj);
 void common_hal_synthio_synthesizer_deinit(synthio_synthesizer_obj_t *self);
 bool common_hal_synthio_synthesizer_deinited(synthio_synthesizer_obj_t *self);
@@ -44,4 +44,4 @@ void common_hal_synthio_synthesizer_press(synthio_synthesizer_obj_t *self, mp_ob
 void common_hal_synthio_synthesizer_retrigger(synthio_synthesizer_obj_t *self, mp_obj_t to_retrigger);
 void common_hal_synthio_synthesizer_release_all(synthio_synthesizer_obj_t *self);
 mp_obj_t common_hal_synthio_synthesizer_get_pressed_notes(synthio_synthesizer_obj_t *self);
-mp_obj_t common_hal_synthio_synthesizer_get_lfos(synthio_synthesizer_obj_t *self);
+mp_obj_t common_hal_synthio_synthesizer_get_blocks(synthio_synthesizer_obj_t *self);
