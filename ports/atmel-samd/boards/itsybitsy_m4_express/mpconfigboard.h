@@ -22,3 +22,6 @@
 // USB is always used internally so skip the pin objects for it.
 #define IGNORE_PIN_PA24     1
 #define IGNORE_PIN_PA25     1
+
+// enable uctypes
+#define MICROPY_PY_UCTYPES (1)
