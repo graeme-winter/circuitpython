@@ -160,7 +160,7 @@ STATIC void start_mp(supervisor_allocation *heap, supervisor_allocation *pystack
     uint32_t *stack_bottom = stack_get_bottom();
     if (stack_bottom != NULL) {
         size_t stack_length = stack_get_length();
-        mp_stack_set_top(stack_bottom + (stack_length / sizeof(uint32_t)));
+        // mp_stack_set_top(stack_bottom + (stack_length / sizeof(uint32_t)));
         mp_stack_set_limit(stack_length - 1024);
     }
 
