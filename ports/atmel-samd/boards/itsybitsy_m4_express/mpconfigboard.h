@@ -4,10 +4,10 @@
 #define CIRCUITPY_MCU_FAMILY samd51
 
 // This is for Rev B
-#define MICROPY_HW_LED_STATUS   (&pin_PA22)
+#define MICROPY_HW_LED_STATUS (&pin_PA22)
 
-#define MICROPY_HW_APA102_MOSI   (&pin_PB03)
-#define MICROPY_HW_APA102_SCK    (&pin_PB02)
+#define MICROPY_HW_APA102_MOSI (&pin_PB03)
+#define MICROPY_HW_APA102_SCK (&pin_PB02)
 
 #define DEFAULT_I2C_BUS_SCL (&pin_PA13)
 #define DEFAULT_I2C_BUS_SDA (&pin_PA12)
@@ -20,5 +20,7 @@
 #define DEFAULT_UART_BUS_TX (&pin_PA17)
 
 // USB is always used internally so skip the pin objects for it.
-#define IGNORE_PIN_PA24     1
-#define IGNORE_PIN_PA25     1
+#define IGNORE_PIN_PA24     (1)
+#define IGNORE_PIN_PA25     (1)
+
+#define MICROPY_PY_UCTYPES (1)
