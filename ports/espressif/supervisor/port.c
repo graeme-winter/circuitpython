@@ -74,10 +74,6 @@
 #include "peripherals/touch.h"
 #endif
 
-#if CIRCUITPY_AUDIOBUSIO
-#include "common-hal/audiobusio/__init__.h"
-#endif
-
 #if CIRCUITPY_BLEIO
 #include "shared-bindings/_bleio/__init__.h"
 #endif
@@ -86,21 +82,26 @@
 #include "esp_camera.h"
 #endif
 
-#ifndef CONFIG_IDF_TARGET_ESP32
-#include "soc/cache_memory.h"
-#endif
-
 #include "soc/efuse_reg.h"
+#if defined(SOC_LP_AON_SUPPORTED)
+#include "soc/lp_aon_reg.h"
+#define CP_SAVED_WORD_REGISTER LP_AON_STORE0_REG
+#else
 #include "soc/rtc_cntl_reg.h"
-
-#include "esp_debug_helpers.h"
+#define CP_SAVED_WORD_REGISTER RTC_CNTL_STORE0_REG
+#endif
+#include "soc/spi_pins.h"
 
 #include "bootloader_flash_config.h"
+
+#include "esp_debug_helpers.h"
 #include "esp_efuse.h"
 #include "esp_ipc.h"
 #include "esp_rom_efuse.h"
+#include "esp_timer.h"
 
 #ifdef CONFIG_IDF_TARGET_ESP32
+#include "hal/efuse_hal.h"
 #include "esp32/rom/efuse.h"
 #endif
 
@@ -187,7 +188,7 @@ static void _never_reset_spi_ram_flash(void) {
     if (pkg_ver == EFUSE_RD_CHIP_VER_PKG_ESP32D2WDQ5) {
         never_reset_pin_number(D2WD_PSRAM_CLK_IO);
         never_reset_pin_number(D2WD_PSRAM_CS_IO);
-    } else if (pkg_ver == EFUSE_RD_CHIP_VER_PKG_ESP32PICOD4 && esp_efuse_get_chip_ver() >= 3) {
+    } else if (pkg_ver == EFUSE_RD_CHIP_VER_PKG_ESP32PICOD4 && efuse_hal_get_major_chip_version() >= 3) {
         // This chip is ESP32-PICO-V3 and doesn't have PSRAM.
     } else if ((pkg_ver == EFUSE_RD_CHIP_VER_PKG_ESP32PICOD2) || (pkg_ver == EFUSE_RD_CHIP_VER_PKG_ESP32PICOD4)) {
         never_reset_pin_number(PICO_PSRAM_CLK_IO);
@@ -252,7 +253,7 @@ safe_mode_t port_init(void) {
 
     // Send the ROM output out of the UART. This includes early logs.
     #if DEBUG
-    ets_install_uart_printf();
+    esp_rom_install_uart_printf();
     #endif
 
     heap = NULL;
@@ -285,6 +286,7 @@ safe_mode_t port_init(void) {
     #endif
 
     #if ENABLE_JTAG
+    ESP_LOGI(TAG, "Marking JTAG pins never_reset");
     // JTAG
     #ifdef CONFIG_IDF_TARGET_ESP32C3
     common_hal_never_reset_pin(&pin_GPIO4);
@@ -382,10 +384,6 @@ void reset_port(void) {
     analogout_reset();
     #endif
 
-    #if CIRCUITPY_AUDIOBUSIO
-    i2s_reset();
-    #endif
-
     #if CIRCUITPY_BUSIO
     i2c_reset();
     spi_reset();
@@ -451,7 +449,7 @@ void reset_to_bootloader(void) {
 }
 
 void reset_cpu(void) {
-    #ifndef CONFIG_IDF_TARGET_ESP32C3
+    #ifndef CONFIG_IDF_TARGET_ARCH_RISCV
     esp_backtrace_print(100);
     #endif
     esp_restart();
@@ -491,13 +489,12 @@ bool port_has_fixed_stack(void) {
     return true;
 }
 
-// Place the word to save just after our BSS section that gets blanked.
 void port_set_saved_word(uint32_t value) {
-    REG_WRITE(RTC_CNTL_STORE0_REG, value);
+    REG_WRITE(CP_SAVED_WORD_REGISTER, value);
 }
 
 uint32_t port_get_saved_word(void) {
-    return REG_READ(RTC_CNTL_STORE0_REG);
+    return REG_READ(CP_SAVED_WORD_REGISTER);
 }
 
 uint64_t port_get_raw_ticks(uint8_t *subticks) {

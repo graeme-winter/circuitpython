@@ -58,7 +58,6 @@
 #include "supervisor/shared/status_leds.h"
 #include "supervisor/shared/tick.h"
 #include "supervisor/shared/traceback.h"
-#include "supervisor/shared/translate/translate.h"
 #include "supervisor/shared/workflow.h"
 #include "supervisor/usb.h"
 #include "supervisor/workflow.h"
@@ -219,6 +218,10 @@ STATIC void stop_mp(void) {
     usb_background();
     #endif
 
+    // Set the qstr pool back to the const pools. The heap allocated ones will
+    // be overwritten.
+    qstr_reset();
+
     gc_deinit();
 }
 
@@ -238,6 +241,12 @@ void supervisor_execution_status(void) {
     } else {
         serial_write_compressed(translate("Done"));
     }
+}
+#endif
+
+#if CIRCUITPY_WATCHDOG
+pyexec_result_t *pyexec_result(void) {
+    return &_exec_result;
 }
 #endif
 
@@ -1190,7 +1199,9 @@ void NORETURN nlr_jump_fail(void *val) {
 
 #ifndef NDEBUG
 static void NORETURN __fatal_error(const char *msg) {
+    #if CIRCUITPY_DEBUG == 0
     reset_into_safe_mode(SAFE_MODE_HARD_FAULT);
+    #endif
     while (true) {
     }
 }

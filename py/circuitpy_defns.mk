@@ -603,6 +603,7 @@ SRC_SHARED_MODULE_ALL = \
 	displayio/TileGrid.c \
 	displayio/area.c \
 	displayio/__init__.c \
+	dotclockframebuffer/__init__.c \
 	floppyio/__init__.c \
 	fontio/BuiltinFont.c \
 	fontio/__init__.c \
@@ -665,6 +666,7 @@ SRC_SHARED_MODULE_ALL = \
 	usb/core/__init__.c \
 	usb/core/Device.c \
 	ustack/__init__.c \
+	watchdog/__init__.c \
 	zlib/__init__.c \
 	vectorio/Circle.c \
 	vectorio/Polygon.c \
@@ -792,6 +794,7 @@ endif
 $(patsubst %.c,$(BUILD)/%.o,$(SRC_LIBM)): CFLAGS += -Wno-missing-prototypes
 endif
 
+# Sources used in all ports except unix.
 SRC_CIRCUITPY_COMMON = \
 	shared/libc/string0.c \
 	shared/readline/readline.c \
@@ -841,3 +844,8 @@ invalid-board:
 	echo "Valid boards:" && \
 	printf '%s\n' $(ALL_BOARDS_IN_PORT) | column -xc $$(tput cols || echo 80) 1>&2 && \
 	false
+
+# Print out the value of a make variable.
+# https://stackoverflow.com/questions/16467718/how-to-print-out-a-variable-in-makefile
+print-%:
+	@echo $* = $($*)

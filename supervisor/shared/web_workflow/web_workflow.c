@@ -339,7 +339,7 @@ bool supervisor_start_web_workflow(bool reload) {
 
     initialized = pool.base.type == &socketpool_socketpool_type;
 
-    if (initialized){
+    if (initialized) {
         if (!common_hal_socketpool_socket_get_closed(&active)) {
             common_hal_socketpool_socket_close(&active);
         }
@@ -347,8 +347,7 @@ bool supervisor_start_web_workflow(bool reload) {
         #if CIRCUITPY_MDNS
         // Try to start MDNS if the user deinited it.
         if (mdns.base.type != &mdns_server_type ||
-            common_hal_mdns_server_deinited(&mdns) ||
-            reload) { // Always reconstruct on reload, since we don't know if the net changed.
+            common_hal_mdns_server_deinited(&mdns)) {
             mdns_server_construct(&mdns, true);
             mdns.base.type = &mdns_server_type;
             if (!common_hal_mdns_server_deinited(&mdns)) {
@@ -369,10 +368,10 @@ bool supervisor_start_web_workflow(bool reload) {
         }
         // Wake polling thread (maybe)
         socketpool_socket_poll_resume();
-        #endif
-        return true;
-    }
-    return false;
+    #endif
+    return true;
+}
+return false;
 }
 
 void web_workflow_send_raw(socketpool_socket_obj_t *socket, const uint8_t *buf, int len) {
