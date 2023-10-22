@@ -32,7 +32,6 @@
 #include "shared-bindings/microcontroller/__init__.h"
 #include "shared-bindings/util.h"
 #include "supervisor/board.h"
-#include "supervisor/shared/translate/translate.h"
 #include "common-hal/microcontroller/Pin.h"
 #include "shared-bindings/microcontroller/Pin.h"
 
@@ -269,13 +268,13 @@ bool common_hal_sdioio_sdcard_deinited(sdioio_sdcard_obj_t *self) {
 
 STATIC void never_reset_mcu_periph(const mcu_periph_obj_t *periph) {
     if (periph) {
-        never_reset_pin_number(periph->pin->port,periph->pin->number);
+        never_reset_pin_number(periph->pin->port, periph->pin->number);
     }
 }
 
 STATIC void reset_mcu_periph(const mcu_periph_obj_t *periph) {
     if (periph) {
-        reset_pin_number(periph->pin->port,periph->pin->number);
+        reset_pin_number(periph->pin->port, periph->pin->number);
     }
 }
 

@@ -37,7 +37,6 @@
 #include "shared-bindings/synthio/Synthesizer.h"
 #include "shared-bindings/synthio/LFO.h"
 #include "shared-bindings/synthio/__init__.h"
-#include "supervisor/shared/translate/translate.h"
 
 //| NoteSequence = Sequence[Union[int, Note]]
 //| """A sequence of notes, which can each be integer MIDI note numbers or `Note` objects"""
@@ -79,8 +78,7 @@ STATIC mp_obj_t synthio_synthesizer_make_new(const mp_obj_type_t *type, size_t n
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all_kw_array(n_args, n_kw, all_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
-    synthio_synthesizer_obj_t *self = m_new_obj(synthio_synthesizer_obj_t);
-    self->base.type = &synthio_synthesizer_type;
+    synthio_synthesizer_obj_t *self = mp_obj_malloc(synthio_synthesizer_obj_t, &synthio_synthesizer_type);
 
     common_hal_synthio_synthesizer_construct(self,
         args[ARG_sample_rate].u_int,
@@ -452,13 +450,11 @@ STATIC const audiosample_p_t synthio_synthesizer_proto = {
     .get_buffer_structure = (audiosample_get_buffer_structure_fun)synthio_synthesizer_get_buffer_structure,
 };
 
-const mp_obj_type_t synthio_synthesizer_type = {
-    { &mp_type_type },
-    .name = MP_QSTR_Synthesizer,
-    .flags = MP_TYPE_FLAG_EXTENDED,
-    .make_new = synthio_synthesizer_make_new,
-    .locals_dict = (mp_obj_dict_t *)&synthio_synthesizer_locals_dict,
-    MP_TYPE_EXTENDED_FIELDS(
-        .protocol = &synthio_synthesizer_proto,
-        ),
-};
+MP_DEFINE_CONST_OBJ_TYPE(
+    synthio_synthesizer_type,
+    MP_QSTR_Synthesizer,
+    MP_TYPE_FLAG_NONE,
+    make_new, synthio_synthesizer_make_new,
+    locals_dict, &synthio_synthesizer_locals_dict,
+    protocol, &synthio_synthesizer_proto
+    );

@@ -332,8 +332,9 @@ MP_DEFINE_CONST_FUN_OBJ_1(wifi_radio_stop_station_obj, wifi_radio_stop_station);
 //|
 //|         **Limitations:** On Espressif, ``authmode`` with a non-empty password must include
 //|         `wifi.AuthMode.PSK`, and one or both of `wifi.AuthMode.WPA` and `wifi.AuthMode.WPA2`.
-//|         On Pi Pico W, ``authmode`` is ignored; it is always ``(wifi.AuthMode.WPA2, wifi.AuthMode.PSK)`
-//|         with a non-empty password, or ``(wifi.AuthMode.OPEN,)`` when no password is given.
+//|         On Pi Pico W, ``authmode`` is ignored; it is always ``(wifi.AuthMode.WPA2, wifi.AuthMode.PSK)``
+//|         with a non-empty password, or ``(wifi.AuthMode.OPEN)``, when no password is given.
+//|         On Pi Pico W, the AP can be started and stopped only once per reboot.
 //|
 //|         The length of ``password`` must be 8-63 characters if it is ASCII,
 //|         or exactly 64 hexadecimal characters if it is the hex form of the 256-bit key.
@@ -776,8 +777,9 @@ STATIC const mp_rom_map_elem_t wifi_radio_locals_dict_table[] = {
 
 STATIC MP_DEFINE_CONST_DICT(wifi_radio_locals_dict, wifi_radio_locals_dict_table);
 
-const mp_obj_type_t wifi_radio_type = {
-    .base = { &mp_type_type },
-    .name = MP_QSTR_Radio,
-    .locals_dict = (mp_obj_t)&wifi_radio_locals_dict,
-};
+MP_DEFINE_CONST_OBJ_TYPE(
+    wifi_radio_type,
+    MP_QSTR_Radio,
+    MP_TYPE_FLAG_NONE,
+    locals_dict, &wifi_radio_locals_dict
+    );
